@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.dpoc.platform }}
+  labels:
+    app: {{ .Chart.Name }}
+    dpoc.specpenguin.dev/platform: {{ .Values.dpoc.platform }}
+    dpoc.specpenguin.dev/service: {{ .Values.dpoc.service }}
+    dpoc.specpenguin.dev/landscape: {{ .Values.dpoc.landscape }}
+    dpoc.specpenguin.dev/cluster: {{ .Values.dpoc.cluster }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    rollingUpdate: {maxUnavailable: 0, maxSurge: 1}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        dpoc.specpenguin.dev/platform: {{ .Values.dpoc.platform }}
+        dpoc.specpenguin.dev/service: {{ .Values.dpoc.service }}
+        dpoc.specpenguin.dev/landscape: {{ .Values.dpoc.landscape }}
+    spec:
+      terminationGracePeriodSeconds: 30 # > preStop 5 + drain 10 (H2) + margin
+      containers:
+        - name: app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          ports:
+            - {name: http, containerPort: 3000}
+          env:
+            - name: DPOC_CLUSTER
+              value: {{ .Values.dpoc.cluster | quote }}
+            - name: DPOC_LANDSCAPE
+              value: {{ .Values.dpoc.landscape | quote }}
+            - name: DPOC_VERSION
+              value: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
+          readinessProbe:
+            httpGet: {path: /healthz, port: http}
+            periodSeconds: 2
+            failureThreshold: 2
+          lifecycle:
+            preStop:
+              exec: {command: ["sleep", "5"]}
+          resources:
+            requests: {cpu: 50m, memory: 64Mi}
+          volumeMounts:
+            # G3: the pod does NOT start until T3 has written the database secret
+            - name: database-main
+              mountPath: /deps/database-main
+              readOnly: true
+      volumes:
+        - name: database-main
+          secret: {secretName: {{ printf "%s-database-main" .Values.dpoc.service }}} # NOT optional (G3)

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: dpoc-argon-zinc
+description: app chart for argon.zinc (drill-template service; runs on every cluster of a landscape)
+type: application
+version: 0.1.0
+appVersion: 0.1.0

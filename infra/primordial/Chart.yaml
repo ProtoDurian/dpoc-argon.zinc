@@ -1,0 +1,6 @@
+apiVersion: v2
+name: dpoc-argon-zinc-primordial
+description: primordial chart for argon.zinc (one Database record; runs ONCE per landscape on Primordial)
+type: application
+version: 0.1.0
+appVersion: 0.1.0

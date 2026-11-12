@@ -1,0 +1,15 @@
+# Defaults are a lint/local sample (pichu). The row AppSets inject the dpoc block.
+dpoc:
+  platform: argon
+  service: zinc
+  landscape: pichu
+  mark: ""
+  region: SIN
+  roots:
+    - c.dpoc.specpenguin.dev
+    - cf.dpoc.specpenguin.dev
+    - s.dpoc.specpenguin.dev
+
+modules:
+  database:
+    main: {type: neon, version: 17}

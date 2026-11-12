@@ -1,0 +1,12 @@
+{
+  "name": "dpoc-argon-zinc",
+  "version": "0.1.0",
+  "private": true,
+  "module": "src/index.ts",
+  "scripts": {
+    "start": "bun src/index.ts"
+  },
+  "dependencies": {
+    "pg": "^8.13.0"
+  }
+}

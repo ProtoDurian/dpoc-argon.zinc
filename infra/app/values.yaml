@@ -1,0 +1,18 @@
+# Defaults are a lint/local sample (pichu). The row AppSets inject the dpoc block + image.tag.
+replicas: 2
+
+image:
+  repository: reg.dpoc.specpenguin.dev/dpoc-argon-zinc
+  tag: "" # empty -> .Chart.AppVersion
+
+dpoc:
+  platform: argon
+  service: zinc
+  landscape: pichu
+  cluster: pichu-opal
+  mark: opal
+  region: SIN
+  roots:
+    - c.dpoc.specpenguin.dev
+    - cf.dpoc.specpenguin.dev
+    - s.dpoc.specpenguin.dev

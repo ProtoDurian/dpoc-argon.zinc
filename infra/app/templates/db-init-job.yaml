@@ -1,0 +1,35 @@
+# db-init (C-01-43): runs BEFORE the pods update. Helm pre-install/pre-upgrade + Argo CD PreSync (dual-annotated, rules R20).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Chart.Name }}-db-init
+  namespace: {{ .Values.dpoc.platform }}
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-delete-policy: before-hook-creation
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+  labels:
+    dpoc.specpenguin.dev/service: {{ .Values.dpoc.service }}
+    app.kubernetes.io/component: db-init
+spec:
+  backoffLimit: 1
+  activeDeadlineSeconds: {{ .Values.dbinit.deadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        dpoc.specpenguin.dev/service: {{ .Values.dpoc.service }}
+        app.kubernetes.io/component: db-init
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["bun", "src/dbinit.ts"]
+          env:
+            - {name: DBINIT_WAIT_S, value: {{ .Values.dbinit.waitSeconds | quote }}}
+          volumeMounts:
+            - {name: database-main, mountPath: /deps/database-main, readOnly: true}
+      volumes:
+        - name: database-main
+          secret: {secretName: {{ printf "%s-database-main" .Values.dpoc.service }}}

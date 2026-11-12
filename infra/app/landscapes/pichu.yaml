@@ -1,2 +1,2 @@
-# landscape pichu — pick 7a per-landscape app settings
-replicas: 2
+replicas: 1
+settings: {banner: "pichu-dev", poolMax: 3}

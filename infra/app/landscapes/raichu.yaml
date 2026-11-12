@@ -1,2 +1,2 @@
-# landscape raichu — pick 7a per-landscape app settings
 replicas: 2
+settings: {banner: "raichu-prod-sg", poolMax: 5}

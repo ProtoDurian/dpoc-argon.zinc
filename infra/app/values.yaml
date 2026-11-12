@@ -16,3 +16,10 @@ dpoc:
     - c.dpoc.specpenguin.dev
     - cf.dpoc.specpenguin.dev
     - s.dpoc.specpenguin.dev
+
+settings:          # per-landscape settings come from landscapes/<l>.yaml (pick 7a)
+  banner: default-not-overridden
+  poolMax: 5
+dbinit:
+  waitSeconds: 60
+  deadlineSeconds: 150

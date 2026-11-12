@@ -37,6 +37,10 @@ spec:
               value: {{ .Values.dpoc.landscape | quote }}
             - name: DPOC_VERSION
               value: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
+            - name: ZINC_BANNER
+              value: {{ .Values.settings.banner | quote }}
+            - name: ZINC_POOL_MAX
+              value: {{ .Values.settings.poolMax | quote }}
           readinessProbe:
             httpGet: {path: /healthz, port: http}
             periodSeconds: 2

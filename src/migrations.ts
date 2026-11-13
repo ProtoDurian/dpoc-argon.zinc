@@ -1,9 +1,10 @@
 // zinc schema migrations. One list per release; db-init applies the ones this release knows and ignores newer applied ones.
-// RELEASE v2.2.0: schema 3 = BREAKING rename (NOT expand/contract: the previous release cannot write any more)
+// RELEASE v2.3.0: schema 4 = harmless index (used for the db-init-red drill)
 export const MIGRATIONS: { version: number; name: string; sql: string }[] = [
   { version: 1, name: "create notes", sql: "create table if not exists notes (id text primary key, body text not null, created_at timestamptz not null default now())" },
   { version: 2, name: "expand: add author", sql: "alter table notes add column if not exists author text" },
   { version: 3, name: "BREAKING: rename body to text", sql: "do $$ begin if exists (select 1 from information_schema.columns where table_name='notes' and column_name='body') then alter table notes rename column body to text; end if; end $$" },
+  { version: 4, name: "index on created_at", sql: "create index if not exists notes_created_at on notes(created_at)" },
 ];
 export const SEED = "insert into notes(id, text) values ('seed-1','seeded by db-init') on conflict (id) do nothing";
 /** the write this release makes (args: id, text) */

@@ -27,8 +27,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           command: ["bun", "src/dbinit.ts"]
           env:
-            - {name: DBINIT_WAIT_S, value: {{ .Values.dbinit.waitSeconds 
-            - {name: DBINIT_HOST_OVERRIDE, value: {{ .Values.dbinit.hostOverride | default "" | quote }}}| quote }}}
+            - {name: DBINIT_WAIT_S, value: {{ .Values.dbinit.waitSeconds | quote }}}
+            - {name: DBINIT_HOST_OVERRIDE, value: {{ .Values.dbinit.hostOverride | default "" | quote }}}
           volumeMounts:
             - {name: database-main, mountPath: /deps/database-main, readOnly: true}
       volumes:

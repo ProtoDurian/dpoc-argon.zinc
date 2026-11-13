@@ -21,5 +21,6 @@ settings:          # per-landscape settings come from landscapes/<l>.yaml (pick 
   banner: default-not-overridden
   poolMax: 5
 dbinit:
-  waitSeconds: 60
+  waitSeconds: 20
+  hostOverride: ""
   deadlineSeconds: 150

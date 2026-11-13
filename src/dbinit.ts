@@ -11,12 +11,13 @@ const log = (evt: string, x: Record<string, unknown> = {}) => console.log(JSON.s
 
 async function connect(): Promise<pg.Client> {
   const deadline = Date.now() + WAIT_S * 1000;
+  const OVERRIDE = process.env.DBINIT_HOST_OVERRIDE; // drill hook: pretend the database is unreachable
   let last = "";
   for (let i = 1; ; i++) {
     try {
       const s = JSON.parse(readFileSync(`${DEPS}/database-main/secret.json`, "utf8"));
       // migrations use the DIRECT host: a session advisory lock over the pooler (pgbouncer, transaction mode) leaks to the pooled server connection and blocks every later db-init
-      const c = new pg.Client({ host: s.directHost ?? s.host, port: s.port, user: s.user, password: s.password, database: s.database, ssl: s.ssl ? { rejectUnauthorized: false, servername: s.directHost ?? s.host } : undefined, connectionTimeoutMillis: 5000 });
+      const c = new pg.Client({ host: OVERRIDE || (s.directHost ?? s.host), port: s.port, user: s.user, password: s.password, database: s.database, ssl: s.ssl ? { rejectUnauthorized: false, servername: s.directHost ?? s.host } : undefined, connectionTimeoutMillis: 5000 });
       c.on("error", () => {});
       await c.connect();
       await c.query("select 1");

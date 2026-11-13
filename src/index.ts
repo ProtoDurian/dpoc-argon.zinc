@@ -5,7 +5,7 @@
 // the log as db-generation events.
 import pkg from "../package.json";
 import { AppDb } from "./lib/pgapp.ts";
-import { TEXT_COL, SCHEMA } from "./migrations.ts";
+import { INSERT_SQL, SCHEMA } from "./migrations.ts";
 
 const PORT = Number(process.env.PORT ?? 3000);
 const CLUSTER = process.env.DPOC_CLUSTER ?? "local";
@@ -52,7 +52,7 @@ const server = Bun.serve({
       try {
         const b: any = await req.json();
         const id = String(b.id);
-        await db.write((c) => c.query(`insert into notes(id, ${TEXT_COL}) values ($1, $2) on conflict (id) do nothing`, [id, String(b.text ?? "x")]), { idempotent: true });
+        await db.write((c) => c.query(INSERT_SQL, [id, String(b.text ?? "x")]), { idempotent: true });
         r = json(req, 200, { ok: true, id });
       } catch (e: any) { r = json(req, 500, { ok: false, err: String(e?.message ?? e).slice(0, 200) }); }
     } else if (path === "/api/notes/count") {

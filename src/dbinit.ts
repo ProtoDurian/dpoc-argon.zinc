@@ -15,7 +15,8 @@ async function connect(): Promise<pg.Client> {
   for (let i = 1; ; i++) {
     try {
       const s = JSON.parse(readFileSync(`${DEPS}/database-main/secret.json`, "utf8"));
-      const c = new pg.Client({ host: s.host, port: s.port, user: s.user, password: s.password, database: s.database, ssl: s.ssl ? { rejectUnauthorized: false, servername: s.host } : undefined, connectionTimeoutMillis: 5000 });
+      // migrations use the DIRECT host: a session advisory lock over the pooler (pgbouncer, transaction mode) leaks to the pooled server connection and blocks every later db-init
+      const c = new pg.Client({ host: s.directHost ?? s.host, port: s.port, user: s.user, password: s.password, database: s.database, ssl: s.ssl ? { rejectUnauthorized: false, servername: s.host } : undefined, connectionTimeoutMillis: 5000 });
       c.on("error", () => {});
       await c.connect();
       await c.query("select 1");
